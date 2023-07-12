@@ -11,6 +11,12 @@ router.post('/', (req, res, next) => {
 		.catch((error) => res.status(400).json({ error }));
 });
 
+router.put('/:id', (req, res, next) => {
+	Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
+		.then(() => res.status(200).json({ message: 'Object updated.' }))
+		.catch((error) => res.status(400).json({ error }));
+});
+
 router.get('/', (req, res, next) => {
 	Book.find()
 		.then((books) => res.status(200).json(books))
