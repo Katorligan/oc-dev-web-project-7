@@ -17,6 +17,12 @@ router.put('/:id', (req, res, next) => {
 		.catch((error) => res.status(400).json({ error }));
 });
 
+router.delete('/:id', (req, res, next) => {
+	Book.deleteOne({ _id: req.params.id })
+		.then(() => res.status(200).json({ message: 'Object deleted.' }))
+		.catch((error) => res.status(400).json({ error }));
+});
+
 router.get('/', (req, res, next) => {
 	Book.find()
 		.then((books) => res.status(200).json(books))
