@@ -26,6 +26,14 @@ exports.updateBook = (req, res, next) => {
 			if (book.userId != req.auth.userId) {
 				res.status(401).json({ message: 'Unauthorized.' });
 			} else {
+				if (req.file) {
+					const filename = book.imageUrl.split('/images/')[1];
+
+					fs.unlink(`images/${filename}`, (error) => {
+						if (error) throw error;
+					});
+				}
+
 				Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
 					.then(() => res.status(200).json({ message: 'Object updated.' }))
 					.catch((error) => res.status(400).json({ error }));
