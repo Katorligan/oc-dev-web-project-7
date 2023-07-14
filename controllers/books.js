@@ -1,3 +1,4 @@
+const fs = require('fs');
 const Book = require('../models/Book');
 
 exports.createBook = (req, res, next) => {
@@ -34,8 +35,19 @@ exports.updateBook = (req, res, next) => {
 };
 
 exports.deleteBook = (req, res, next) => {
-	Book.deleteOne({ _id: req.params.id })
-		.then(() => res.status(200).json({ message: 'Object deleted.' }))
+	Book.findOne({ _id: req.params.id })
+		.then((book) => {
+			if (book.userId != req.auth.userId) {
+				res.status(401).json({ message: 'Unauthorized.' });
+			} else {
+				const filename = book.imageUrl.split('/images/')[1];
+				fs.unlink(`images/${filename}`, () => {
+					Book.deleteOne({ _id: req.params.id })
+						.then(() => res.status(200).json({ message: 'Object deleted.' }))
+						.catch((error) => res.status(400).json({ error }));
+				});
+			}
+		})
 		.catch((error) => res.status(400).json({ error }));
 };
 
