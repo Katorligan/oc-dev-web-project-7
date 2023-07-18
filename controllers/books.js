@@ -128,3 +128,13 @@ exports.rateBook = (req, res, next) => {
 			.catch((error) => res.status(400).json({ error }));
 	}
 };
+
+exports.getBestRating = (req, res, next) => {
+	Book.find()
+		.sort({ averageRating: -1 })
+		.then((books) => {
+			const bestRatedBooks = books.slice(0, 3);
+			res.status(200).json(bestRatedBooks);
+		})
+		.catch((error) => res.status(400).json({ error }));
+};
