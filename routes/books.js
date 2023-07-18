@@ -10,5 +10,6 @@ router.put('/:id', auth, multer, booksController.updateBook);
 router.delete('/:id', auth, booksController.deleteBook);
 router.get('/:id', booksController.getBook);
 router.get('/', booksController.getAllBooks);
+router.post('/:id/rating', auth, booksController.rateBook);
 
 module.exports = router;

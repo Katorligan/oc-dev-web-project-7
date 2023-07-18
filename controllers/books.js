@@ -100,3 +100,31 @@ exports.getAllBooks = (req, res, next) => {
 		.then((books) => res.status(200).json(books))
 		.catch((error) => res.status(400).json({ error }));
 };
+
+exports.rateBook = (req, res, next) => {
+	if (req.body.rating < 0 || req.body.rating > 5) {
+		res.status(400).json({ message: 'Rating must be between 0 and 5.' });
+	} else {
+		Book.findOne({ _id: req.params.id })
+			.then((book) => {
+				const ratingObject = { userId: req.body.userId, grade: req.body.rating };
+				book.ratings.push(ratingObject);
+				book.save()
+					.then(() => {
+						let totalRating = 0;
+
+						for (const rating of book.ratings) {
+							totalRating += rating.grade;
+						}
+
+						const averageRating = totalRating / book.ratings.length;
+						book.averageRating = averageRating;
+						book.save()
+							.then(() => res.status(200).json(book))
+							.catch((error) => res.status(400).json({ error }));
+					})
+					.catch((error) => res.status(400).json({ error }));
+			})
+			.catch((error) => res.status(400).json({ error }));
+	}
+};
