@@ -11,7 +11,10 @@ exports.signup = (req, res, next) => {
 				password: hash,
 			});
 			user.save()
-				.then(() => res.status(201).json({ message: 'User created.' }))
+				.then(() => {
+					res.status(201).json({ message: 'User created.' });
+					console.log('New user added to database.');
+				})
 				.catch((error) => res.status(400).json({ error }));
 		})
 		.catch((error) => res.status(500).json({ error }));
@@ -33,6 +36,7 @@ exports.login = (req, res, next) => {
 								userId: user._id,
 								token: jwt.sign({ userId: user._id }, 'TEMPORARY_TOKEN_SECRET', { expiresIn: '24h' }),
 							});
+							console.log('User logged in.');
 						}
 					})
 					.catch((error) => res.status(500).json({ error }));

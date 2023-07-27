@@ -20,7 +20,10 @@ exports.createBook = (req, res, next) => {
 			});
 
 			book.save()
-				.then(() => res.status(201).json({ message: 'Object saved.' }))
+				.then(() => {
+					res.status(201).json({ message: 'Object saved.' });
+					console.log('New book added to database.');
+				})
 				.catch((error) => res.status(400).json({ error }));
 		})
 		.catch((error) => res.status(500).json({ error }));
@@ -50,7 +53,10 @@ exports.updateBook = (req, res, next) => {
 							});
 
 							Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
-								.then(() => res.status(200).json({ message: 'Object updated.' }))
+								.then(() => {
+									res.status(200).json({ message: 'Object updated.' });
+									console.log('Book updated.');
+								})
 								.catch((error) => res.status(400).json({ error }));
 						}
 					})
@@ -64,7 +70,10 @@ exports.updateBook = (req, res, next) => {
 					res.status(401).json({ message: 'Unauthorized.' });
 				} else {
 					Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
-						.then(() => res.status(200).json({ message: 'Object updated.' }))
+						.then(() => {
+							res.status(200).json({ message: 'Object updated.' });
+							console.log('Book updated.');
+						})
 						.catch((error) => res.status(400).json({ error }));
 				}
 			})
@@ -81,7 +90,10 @@ exports.deleteBook = (req, res, next) => {
 				const filename = book.imageUrl.split('/images/')[1];
 				fs.unlink(`images/${filename}`, () => {
 					Book.deleteOne({ _id: req.params.id })
-						.then(() => res.status(200).json({ message: 'Object deleted.' }))
+						.then(() => {
+							res.status(200).json({ message: 'Object deleted.' });
+							console.log('Book deleted.');
+						})
 						.catch((error) => res.status(400).json({ error }));
 				});
 			}
@@ -123,7 +135,10 @@ exports.rateBook = (req, res, next) => {
 							const averageRating = totalRating / book.ratings.length;
 							book.averageRating = averageRating;
 							book.save()
-								.then(() => res.status(200).json(book))
+								.then(() => {
+									res.status(200).json(book);
+									console.log('Rating added and average rating updated.');
+								})
 								.catch((error) => res.status(400).json({ error }));
 						})
 						.catch((error) => res.status(400).json({ error }));
