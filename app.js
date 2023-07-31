@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const booksRoutes = require('./routes/books');
 const usersRoutes = require('./routes/users');
@@ -24,6 +25,14 @@ app.use((req, res, next) => {
 	next();
 });
 
+const limiter = rateLimit({
+	windowMs: 60 * 1000,
+	max: 10,
+	standardHeaders: true,
+	legacyHeaders: false,
+});
+
+app.use(limiter);
 app.use('/api/books', booksRoutes);
 app.use('/api/auth', usersRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
