@@ -28,12 +28,12 @@ app.use((req, res, next) => {
 
 const limiter = rateLimit({
 	windowMs: 60 * 1000,
-	max: 10,
+	max: 5,
 	standardHeaders: true,
 	legacyHeaders: false,
 });
 
-app.use(limiter);
+app.use('/api/auth', limiter);
 app.use(mongoSanitize());
 app.use('/api/books', booksRoutes);
 app.use('/api/auth', usersRoutes);
