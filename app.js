@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
 const path = require('path');
 const booksRoutes = require('./routes/books');
 const usersRoutes = require('./routes/users');
@@ -33,6 +34,7 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
+app.use(mongoSanitize());
 app.use('/api/books', booksRoutes);
 app.use('/api/auth', usersRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
