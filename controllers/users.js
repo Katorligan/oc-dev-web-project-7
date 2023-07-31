@@ -3,6 +3,19 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 exports.signup = (req, res, next) => {
+	const emailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+	const passwordFormat = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+	if (!req.body.email.match(emailFormat)) {
+		res.status(400).json({ message: 'Invalid email.' });
+		return;
+	}
+
+	if (!req.body.password.match(passwordFormat)) {
+		res.status(400).json({ message: 'Password must be at least eight characters long and contain at least one lowercase character, one uppercase character, and one digit.' });
+		return;
+	}
+
 	bcrypt
 		.hash(req.body.password, 10)
 		.then((hash) => {
