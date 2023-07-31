@@ -116,36 +116,29 @@ exports.getAllBooks = (req, res, next) => {
 exports.rateBook = (req, res, next) => {
 	if (req.body.rating < 0 || req.body.rating > 5) {
 		res.status(400).json({ message: 'Rating must be between 0 and 5.' });
-	} else {
-		Book.findOne({ _id: req.params.id })
-			.then((book) => {
-				if (book.ratings.find((rating) => rating.userId === req.auth.userId)) {
-					res.status(400).json({ message: 'User has already rated this book.' });
-				} else {
-					const ratingObject = { userId: req.auth.userId, grade: req.body.rating };
-					book.ratings.push(ratingObject);
-					book.save()
-						.then(() => {
-							let totalRating = 0;
-
-							for (const rating of book.ratings) {
-								totalRating += rating.grade;
-							}
-
-							const averageRating = totalRating / book.ratings.length;
-							book.averageRating = averageRating;
-							book.save()
-								.then(() => {
-									res.status(200).json(book);
-									console.log('Rating added and average rating updated.');
-								})
-								.catch((error) => res.status(400).json({ error }));
-						})
-						.catch((error) => res.status(400).json({ error }));
-				}
-			})
-			.catch((error) => res.status(400).json({ error }));
+		return;
 	}
+
+	Book.findOne({ _id: req.params.id })
+		.then((book) => {
+			if (book.ratings.find((rating) => rating.userId === req.auth.userId)) {
+				res.status(400).json({ message: 'User has already rated this book.' });
+				return;
+			}
+
+			const ratingObject = { userId: req.auth.userId, grade: req.body.rating };
+			book.ratings.push(ratingObject);
+
+			book.averageRating = calculateAverageRating(book.ratings);
+
+			book.save()
+				.then(() => {
+					res.status(200).json(book);
+					console.log('Rating added and average rating updated.');
+				})
+				.catch((error) => res.status(400).json({ error }));
+		})
+		.catch((error) => res.status(400).json({ error }));
 };
 
 exports.getBestRating = (req, res, next) => {
@@ -157,3 +150,14 @@ exports.getBestRating = (req, res, next) => {
 		})
 		.catch((error) => res.status(400).json({ error }));
 };
+
+function calculateAverageRating(ratings) {
+	let totalRating = 0;
+
+	for (const rating of ratings) {
+		totalRating += rating.grade;
+	}
+
+	const averageRating = totalRating / ratings.length;
+	return averageRating;
+}
