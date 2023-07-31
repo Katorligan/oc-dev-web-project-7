@@ -159,5 +159,5 @@ function calculateAverageRating(ratings) {
 	}
 
 	const averageRating = totalRating / ratings.length;
-	return averageRating;
+	return Math.round(averageRating);
 }
